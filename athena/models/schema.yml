@@ -1,0 +1,11 @@
+version: 2
+
+sources:
+  - name: raw-data
+    database: awsdatacatalog
+    schema: db-dbt
+
+    tables:
+      - name: customers_data
+      - name: orders_data
+      - name: payments_data
