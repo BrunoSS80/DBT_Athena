@@ -7,5 +7,68 @@ sources:
 
     tables:
       - name: customers_data
+        description: "Dados brutos de identificação dos clientes."
       - name: orders_data
+        description: "Dados brutos dos pedidos realizados pelos clientes."
       - name: payments_data
+        description: "Dados brutos dos pagamentos associados aos pedidos."
+
+models:
+  - name: customers_360
+    description: "Resumo dos clientes com datas e quantidade de pedidos."
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_customers
+    description: "Dados de clientes renomeados e preparados para análise."
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique
+          - not_null
+
+  - name: stg_orders
+    description: "Dados de pedidos preparados, com identificadores padronizados."
+    columns:
+      - name: order_id
+        data_tests:
+          - unique
+          - not_null
+      - name: status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['placed', 'shipped', 'completed', 'return_pending', 'returned']
+      - name: customer_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_customers')
+                field: customer_id
+  
+  - name: stg_payments
+    description: "Dados de pagamentos preparados e associados aos pedidos."
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: order_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_orders')
+                field: order_id
+  
+  - name: customers_payments
+    description: "Total pago por cliente em pedidos válidos."
+    columns:
+      - name: customer_id
+        data_tests:
+          - not_null
+          - unique
